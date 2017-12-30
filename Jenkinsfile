@@ -5,15 +5,7 @@ node {
       git url: 'https://github.com/rajmani1995/devops-webapp.git'
       mvnHome = tool 'M3'
    }
-   
-   stage ('Sonar Lint') {
-        if (isUnix()) {
-           sh "'${mvnHome}/bin/mvn' clean package -Dmaven.test.skip=true"
-        } else {
-           // bat(/"${mvnHome}\bin\mvn" sonar:sonar/)
-        }   
-   }
-   
+
    stage('Build') {
       // Run the maven build
       if (isUnix()) {
@@ -33,9 +25,10 @@ node {
    
    stage('Integration Test') {
        if (isUnix()) {
-           sh "'${mvnHome}/bin/mvn' integration-test -Dsurfire.skip=true"
+           sh "cp /opt/properties/webapp.properties src/main/resources"
+           sh "'${mvnHome}/bin/mvn' clean integration-test -Dsurfire.skip=true"
        } else {
-           bat(/"${mvnHome}\bin\mvn" integration-test -Dsurfire.skip=true/)
+           bat(/"${mvnHome}\bin\mvn" clean integration-test -Dsurfire.skip=true/)
        }
    }
    
@@ -45,9 +38,7 @@ node {
             sh "cp target/WebApp.war /opt/tomcat/webapps/"
             sh "/opt/tomcat/bin/catalina.sh stop"
             sh "sleep 10s"
-            sh "cp /opt/properties/webapp.properties /opt/tomcat/webapps/WebApp/WEB-INF/classes/"
-       } else {
-           
+            sh "/opt/tomcat/bin/catalina.sh start"
        }
    }
 }
