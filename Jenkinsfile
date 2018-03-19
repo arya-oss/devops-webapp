@@ -22,23 +22,4 @@ node {
            bat(/"${mvnHome}\bin\mvn" test/)
        }
    }
-   
-   stage('Integration Test') {
-       if (isUnix()) {
-           sh "cp /opt/properties/webapp.properties src/main/resources"
-           sh "'${mvnHome}/bin/mvn' clean integration-test -Dsurfire.skip=true"
-       } else {
-           bat(/"${mvnHome}\bin\mvn" clean integration-test -Dsurfire.skip=true/)
-       }
-   }
-   
-   stage('Deploy') {
-       if (isUnix()) {
-            sh "rm -rf /opt/tomcat/webapps/WebApp"
-            sh "cp target/WebApp.war /opt/tomcat/webapps/"
-            sh "/opt/tomcat/bin/catalina.sh stop"
-            sh "sleep 10s"
-            sh "/opt/tomcat/bin/catalina.sh start"
-       }
-   }
 }
